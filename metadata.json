@@ -1,0 +1,5 @@
+{
+  "name": "Argus Vision AI",
+  "description": "An intelligent video analytics platform featuring ROI configuration, AI-driven rule generation, and human-in-the-loop model fine-tuning.",
+  "requestFramePermissions": []
+}
