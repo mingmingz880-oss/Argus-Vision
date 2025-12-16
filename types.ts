@@ -59,8 +59,10 @@ export interface Task {
   alarm_level: AlarmLevel;
   status: TaskStatus;
   sample_count: {
-    total: number;
-    threshold: number;
+    total: number;           // 样本总数
+    labeled: number;         // 已标记样本数
+    positive_threshold: number;  // 正样本阈值
+    negative_threshold: number;  // 负样本阈值
   };
   created_at: string;
 }

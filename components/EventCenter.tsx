@@ -39,7 +39,7 @@ export const EventCenter: React.FC<EventCenterProps> = ({ events }) => {
                 <td className="p-4">{getLevelBadge(evt.alarm_level)}</td>
                 <td className="p-4 text-sm font-medium text-gray-800">{evt.description}</td>
                 <td className="p-4">
-                  <div 
+                  <div
                     className="relative w-16 h-10 bg-gray-200 rounded overflow-hidden cursor-pointer group"
                     onClick={() => setSelectedEvent(evt)}
                   >
@@ -57,10 +57,10 @@ export const EventCenter: React.FC<EventCenterProps> = ({ events }) => {
                   )}
                 </td>
                 <td className="p-4 text-right space-x-2">
-                   <button onClick={() => setSelectedEvent(evt)} className="text-blue-600 hover:bg-blue-50 p-1.5 rounded"><Eye size={16}/></button>
-                   {evt.biz_status === EventStatus.PENDING && (
-                     <button className="text-green-600 hover:bg-green-50 p-1.5 rounded"><CheckCheck size={16}/></button>
-                   )}
+                  <button onClick={() => setSelectedEvent(evt)} className="text-blue-600 hover:bg-blue-50 p-1.5 rounded"><Eye size={16} /></button>
+                  {evt.biz_status === EventStatus.PENDING && (
+                    <button className="text-green-600 hover:bg-green-50 p-1.5 rounded"><CheckCheck size={16} /></button>
+                  )}
                 </td>
               </tr>
             ))}
@@ -74,29 +74,66 @@ export const EventCenter: React.FC<EventCenterProps> = ({ events }) => {
           <div className="bg-white w-full max-w-4xl rounded-xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]">
             <div className="bg-gray-900 p-4 flex justify-between items-center text-white">
               <h3 className="font-medium flex items-center space-x-2">
-                {getLevelBadge(selectedEvent.alarm_level)} 
+                {getLevelBadge(selectedEvent.alarm_level)}
                 <span>{selectedEvent.description}</span>
               </h3>
-              <button onClick={() => setSelectedEvent(null)} className="hover:bg-gray-700 rounded-full p-1"><X size={20}/></button>
+              <button onClick={() => setSelectedEvent(null)} className="hover:bg-gray-700 rounded-full p-1"><X size={20} /></button>
             </div>
-            
-            <div className="flex-1 bg-black relative flex items-center justify-center group">
-               {/* Video Player - Updated with muted, playsInline, and reliable source */}
-               <video 
-                 src="https://videos.pexels.com/video-files/5824632/5824632-hd_1920_1080_24fps.mp4" 
-                 poster={selectedEvent.thumbnail}
-                 controls 
-                 autoPlay 
-                 muted
-                 playsInline
-                 loop
-                 className="max-h-[60vh] w-full"
-               />
-               
-               {/* Overlay Simulation */}
-               <div className="absolute top-4 right-4 bg-black/60 text-white text-xs px-2 py-1 rounded">
-                 ROI 叠加层演示
-               </div>
+
+            <div className="flex-1 bg-gray-900 relative flex items-center justify-center">
+              {/* 识别标注图片 */}
+              <div className="relative">
+                <img
+                  src={selectedEvent.thumbnail}
+                  alt="Detection Result"
+                  className="max-h-[60vh] w-auto"
+                />
+
+                {/* 检测框标注 - 模拟目标框 */}
+                {selectedEvent.target_rect && (
+                  <div
+                    className="absolute border-2 border-red-500 bg-red-500/10"
+                    style={{
+                      left: `${selectedEvent.target_rect.x * 100}%`,
+                      top: `${selectedEvent.target_rect.y * 100}%`,
+                      width: `${selectedEvent.target_rect.w * 100}%`,
+                      height: `${selectedEvent.target_rect.h * 100}%`,
+                    }}
+                  >
+                    <div className="absolute -top-6 left-0 bg-red-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
+                      {selectedEvent.description.split('(')[0].trim()}
+                    </div>
+                  </div>
+                )}
+
+                {/* 默认标注框 - 当没有 target_rect 时显示示例 */}
+                {!selectedEvent.target_rect && (
+                  <div
+                    className="absolute border-2 border-red-500 bg-red-500/10 animate-pulse"
+                    style={{
+                      left: '30%',
+                      top: '25%',
+                      width: '40%',
+                      height: '50%',
+                    }}
+                  >
+                    <div className="absolute -top-6 left-0 bg-red-500 text-white text-xs px-2 py-0.5 rounded whitespace-nowrap">
+                      {selectedEvent.description.split('(')[0].trim()}
+                    </div>
+                  </div>
+                )}
+
+                {/* 置信度标签 */}
+                <div className="absolute bottom-4 right-4 bg-black/70 text-white text-xs px-3 py-1.5 rounded-lg">
+                  <span className="text-green-400">置信度: 95.2%</span>
+                </div>
+              </div>
+
+              {/* 信息面板 */}
+              <div className="absolute top-4 left-4 bg-black/70 text-white text-xs px-3 py-2 rounded-lg space-y-1">
+                <div>检测类型: <span className="text-yellow-300">{selectedEvent.description.split('(')[0].trim()}</span></div>
+                <div>告警等级: {selectedEvent.alarm_level}</div>
+              </div>
             </div>
 
             <div className="p-6 bg-white border-t flex justify-between items-center">
@@ -104,21 +141,21 @@ export const EventCenter: React.FC<EventCenterProps> = ({ events }) => {
                 触发时间: <span className="font-mono text-gray-800">{format(new Date(selectedEvent.trigger_time), 'yyyy-MM-dd HH:mm:ss')}</span>
               </div>
               <div className="space-x-3">
-                 <button 
-                   onClick={() => setSelectedEvent(null)}
-                   className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50"
-                 >
-                   忽略
-                 </button>
-                 <button 
-                   onClick={() => {
-                     // Logic to update status would go here
-                     setSelectedEvent(null);
-                   }}
-                   className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
-                 >
-                   标记已处理
-                 </button>
+                <button
+                  onClick={() => setSelectedEvent(null)}
+                  className="px-4 py-2 border rounded-lg text-gray-600 hover:bg-gray-50"
+                >
+                  忽略
+                </button>
+                <button
+                  onClick={() => {
+                    // Logic to update status would go here
+                    setSelectedEvent(null);
+                  }}
+                  className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium"
+                >
+                  标记已处理
+                </button>
               </div>
             </div>
           </div>
